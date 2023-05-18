@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- linkを押してtabを押すと候補が出てくるよ -->
+  <link rel="stylesheet" href="css/style.css">
+  <title>仙人に挑戦だ！</title>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="home">Homeに戻る</a>
+  </header>
+  <main>
+    <div id="cpu4">
+      <div class="cpu4">
+        <h2>対戦相手：<span class="cpu_name">仙人</span></h2>
+          <h2>よく来たな…、ここでは基本に戻ってじゃんけん1発勝負じゃ</h2>
+          <img src="img/sennnin.png" class="cpu_img">
+      </div>
+      <div class="jyanken">
+        <button onclick="R4_Click(0);"  class="jyanken_hand"><img src="img/gu.png"></button>
+        <button onclick="R4_Click(1);" class="jyanken_hand"><img src="img/tyoki.png"></button>
+        <button onclick="R4_Click(2);" class="jyanken_hand"><img src="img/pa.png"></button>
+      </div>
+  </div>
+    <div class="if_win4">
+      <h1 id="cpu_hand"></h1>
+      <h1>結果は…</h1>
+      <p><span class="player_name"></span>の勝ちだ！おめでとう！</p>
+      <img src="img/clear.png" class="clear_img">
+      <p><button id="send">クリアリストに名を連ねる</button></p>
+      <p>クリアした猛者たち</p>
+      <p><div id="clearlist" style="overflow: scroll;height: 300px;" ></div></p>
+
+      <audio id="clear_audio" preload="auto">
+        <source src="audio/ゲームクリアー！.mp3" type="audio/mp3">
+      </audio>
+    </div>
+    <div class="if_draw4">
+      <h1 id="cpu_hand"></h1>
+      <h1>結果は…</h1>
+      <p>引き分け！</p>
+      <button class="furidashi">もう一度挑戦する！！</button>
+    </div>
+    <div class="if_lose4">
+      <h1 id="cpu_hand"></h1>
+      <h1>結果は…</h1>
+      <p>残念…！挑戦失敗だ…</p>
+      <button class="furidashi">もう一度挑戦する！！</button>
+    </div>
+
+  </main>
+
+
+  <!-- jsを紐づける,Jqureryが先！！！-->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="js/main.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
+    import {getFirestore,collection,doc,Timestamp,addDoc,deleteDoc,onSnapshot,query,orderBy,limit} from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyDWf_xglMZG6IJlhgIvErDGPDoihooR-tQ",
+        authDomain: "jyanken-rich.firebaseapp.com",
+        projectId: "jyanken-rich",
+        storageBucket: "jyanken-rich.appspot.com",
+        messagingSenderId: "73563551971",
+        appId: "1:73563551971:web:454029352c545e5004edd6"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const ref = collection(db,"winners");
+    
+        $("#send").on("click",function(){
+            const clist = {
+                uname : localStorage.getItem('player_name'),
+                date : Timestamp.now()
+            }
+            const docRef = addDoc(ref,clist)
+            
+        });
+
+        const list = query(ref,orderBy("date","desc"));
+        onSnapshot(list,function(snapshot){
+        snapshot.docChanges().forEach((change)=>{
+        let out = "<p>"
+            out += change.doc.data().uname;
+            out += "<p>"
+        console.log(out)
+                $("#clearlist").append(out);
+        });
+        });
+        </script>
+</body>
+</html>
+
+
